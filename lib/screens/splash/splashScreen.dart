@@ -1,4 +1,5 @@
 import 'package:finessmobileapp/screens/auth/clients/loging.dart';
+import 'package:finessmobileapp/screens/auth/clients/register.dart';
 import 'package:flutter/material.dart';
 
 class splachScrenn extends StatefulWidget {
@@ -113,7 +114,7 @@ class _splachScrennState extends State<splachScrenn> {
                     /// Users Button
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => logingScrenn()));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => registerClients()));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
