@@ -1,4 +1,6 @@
 import 'package:finessmobileapp/screens/auth/clients/register.dart';
+import 'package:finessmobileapp/screens/clients/addDetails.dart';
+import 'package:finessmobileapp/screens/clients/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -197,7 +199,7 @@ class _logingScrennState extends State<logingScrenn> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => registerClients()),
+                                      builder: (context) => addDetails()),
                                 );
                               },
                               child: Text(
@@ -221,7 +223,9 @@ class _logingScrennState extends State<logingScrenn> {
                             Container(
                               width: 220,
                               child: ElevatedButton(
-                                onPressed: loginUser,
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => dashboardScreen()));
+                                },
                                 style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all<
                                       Color>(Colors.black),
