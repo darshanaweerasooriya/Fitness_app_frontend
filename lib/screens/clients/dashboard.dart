@@ -1,4 +1,5 @@
 import 'package:finessmobileapp/screens/auth/clients/loging.dart';
+import 'package:finessmobileapp/screens/clients/exerciseSchedule.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import  'dart:convert';
@@ -256,7 +257,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (_) => MealDetailPage(mealType: "Lunch")),
+                builder: (_) => exerciseSChedule()),
           ),
         ),
         const SizedBox(height: 10),
