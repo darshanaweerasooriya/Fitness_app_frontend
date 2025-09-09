@@ -1,3 +1,4 @@
+import 'package:finessmobileapp/components/clients/appbar.dart';
 import 'package:finessmobileapp/screens/auth/clients/register.dart';
 import 'package:finessmobileapp/screens/clients/addDetails.dart';
 import 'package:finessmobileapp/screens/clients/dashboard.dart';
@@ -224,7 +225,7 @@ class _logingScrennState extends State<logingScrenn> {
                               width: 220,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => dashboardScreen()));
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => appbat()));
                                 },
                                 style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all<
