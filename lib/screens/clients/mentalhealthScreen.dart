@@ -12,15 +12,19 @@ class _mentalhealthState extends State<mentalhealth> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
+        appBar:AppBar(
           title: const Text(
             "Mental Health Resources",
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           centerTitle: true,
-          backgroundColor: Colors.teal,
+          backgroundColor: Colors.black,
           elevation: 4,
+          iconTheme: const IconThemeData(
+            color: Colors.white, // Change back arrow color to white
+          ),
         ),
+
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListView(
