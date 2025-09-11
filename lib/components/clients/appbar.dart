@@ -2,6 +2,7 @@ import 'package:finessmobileapp/screens/auth/clients/loging.dart';
 import 'package:finessmobileapp/screens/clients/addDetails.dart';
 import 'package:finessmobileapp/screens/clients/dashboard.dart';
 import 'package:finessmobileapp/screens/clients/exerciseSchedule.dart';
+import 'package:finessmobileapp/screens/clients/feedbacckScreen.dart';
 import 'package:finessmobileapp/screens/clients/gymDetails.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,7 @@ class _appbatState extends State<appbat> {
   final screen=[
     dashboardScreen(),
     gymmDetails(),
-    logingScrenn(),
+    feedbackScreen(),
     addDetails(),
     exerciseSChedule()
   ];
@@ -88,8 +89,8 @@ class _appbatState extends State<appbat> {
                 destinations: [
                   NavigationDestination(icon: Icon(Icons.home,color: Colors.white,), label: "Home"),
                   NavigationDestination(icon: Icon(Icons.add,color: Colors.white,), label: "Add Details"),
-                  NavigationDestination(icon: Icon(Icons.dashboard, color: Colors.white), label: "DashBoard"),
-                  NavigationDestination(icon: Icon(Icons.people,color: Colors.white), label: "Coaches"),
+                  NavigationDestination(icon: Icon(Icons.chat, color: Colors.white), label: "Chat"),
+                  NavigationDestination(icon: Icon(Icons.fitness_center,color: Colors.white), label: "Gyms"),
                   NavigationDestination(icon: Icon(Icons.person,color: Colors.white), label: "Account"),
 
                 ],
