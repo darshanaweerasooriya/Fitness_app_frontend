@@ -1,5 +1,6 @@
 import 'package:finessmobileapp/screens/auth/clients/loging.dart';
 import 'package:finessmobileapp/screens/clients/exerciseSchedule.dart';
+import 'package:finessmobileapp/screens/clients/feedbacckScreen.dart';
 import 'package:finessmobileapp/screens/clients/mentalhealthScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -282,7 +283,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
           title: "Feedbacks ",
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => logingScrenn()),
+            MaterialPageRoute(builder: (_) => feedbackScreen()),
           ),
         ),
       ],

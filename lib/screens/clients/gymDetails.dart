@@ -47,58 +47,67 @@ class _gymmDetailsState extends State<gymmDetails> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Search Gyms"),
-          backgroundColor: Colors.blueAccent,
-        ),
-        body: Column(
-          children: [
-            // Search bar
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: _buildSearchField(
+        backgroundColor: const Color(0xFFF2F6FC), // match dashboard background
+        // appBar: AppBar(
+        //   title: const Text("Find Gyms"),
+        //   backgroundColor: Colors.white,
+        //   elevation: 1,
+        //   titleTextStyle: const TextStyle(
+        //     fontSize: 22,
+        //     fontWeight: FontWeight.bold,
+        //     color: Colors.black,
+        //   ),
+        //   iconTheme: const IconThemeData(color: Colors.black),
+        // ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Search bar styled like dashboard input
+              _buildSearchField(
                 controller: searchController,
                 hint: "Search by location...",
               ),
-            ),
+              const SizedBox(height: 16),
 
-            // List of gyms
-            Expanded(
-              child: filteredGyms.isEmpty
-                  ? const Center(
-                child: Text(
-                  "No gyms found for this location",
-                  style: TextStyle(fontSize: 16),
+              // List of gyms
+              Expanded(
+                child: filteredGyms.isEmpty
+                    ? const Center(
+                  child: Text(
+                    "No gyms found for this location",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: filteredGyms.length,
+                  itemBuilder: (context, index) {
+                    final gym = filteredGyms[index];
+                    return _buildGymCard(
+                      gym["name"]!,
+                      gym["location"]!,
+                      gym["image"]!,
+                    );
+                  },
                 ),
-              )
-                  : ListView.builder(
-                itemCount: filteredGyms.length,
-                itemBuilder: (context, index) {
-                  final gym = filteredGyms[index];
-                  return _buildGymCard(
-                    gym["name"]!,
-                    gym["location"]!,
-                    gym["image"]!,
-                  );
-                },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Search Field Widget
+  // Search Field Widget (modern)
   Widget _buildSearchField({
     required TextEditingController controller,
     required String hint,
   }) {
     return Container(
-      height: 48,
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Colors.white,
         borderRadius: BorderRadius.circular(25),
+        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8)],
       ),
       child: TextField(
         controller: controller,
@@ -109,9 +118,9 @@ class _gymmDetailsState extends State<gymmDetails> {
         },
         decoration: InputDecoration(
           hintText: hint,
-          prefixIcon: const Icon(Icons.search, color: Colors.black),
+          prefixIcon: const Icon(Icons.search, color: Colors.green),
           suffixIcon: IconButton(
-            icon: const Icon(Icons.clear, color: Colors.black),
+            icon: const Icon(Icons.clear, color: Colors.redAccent),
             onPressed: () {
               controller.clear();
               setState(() {
@@ -120,37 +129,40 @@ class _gymmDetailsState extends State<gymmDetails> {
             },
           ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
         ),
       ),
     );
   }
 
-  // Gym Card Widget
+  // Gym Card Widget (match dashboard tile style)
   Widget _buildGymCard(String name, String location, String imagePath) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      elevation: 3,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8)],
+      ),
       child: Row(
         children: [
           // Gym Image
           ClipRRect(
             borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(15), bottomLeft: Radius.circular(15)),
+                topLeft: Radius.circular(18), bottomLeft: Radius.circular(18)),
             child: Image.asset(
-              imagePath, // <-- Use local asset
+              imagePath,
               height: 100,
               width: 100,
               fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
 
           // Gym Details
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -160,10 +172,10 @@ class _gymmDetailsState extends State<gymmDetails> {
                         fontSize: 18, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 6),
                   Text(
                     location,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -171,6 +183,11 @@ class _gymmDetailsState extends State<gymmDetails> {
               ),
             ),
           ),
+
+          const Padding(
+            padding: EdgeInsets.only(right: 12),
+            child: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          )
         ],
       ),
     );
