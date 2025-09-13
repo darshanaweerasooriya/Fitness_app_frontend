@@ -1,5 +1,7 @@
 import 'package:finessmobileapp/screens/auth/clients/loging.dart';
 import 'package:finessmobileapp/screens/auth/clients/register.dart';
+import 'package:finessmobileapp/screens/auth/coaches/coachLoging.dart';
+import 'package:finessmobileapp/screens/auth/coaches/coachRegister.dart';
 import 'package:flutter/material.dart';
 
 class splachScrenn extends StatefulWidget {
@@ -132,7 +134,7 @@ class _splachScrennState extends State<splachScrenn> {
                     /// Coaches Button
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => logingScrenn()));
+                        Navigator.of(context).push(MaterialPageRoute(builder: (_) => coachRegister()));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
