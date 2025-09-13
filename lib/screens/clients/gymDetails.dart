@@ -31,7 +31,7 @@ class GymService {
   static const String baseUrl = "http://10.0.2.2:3001/api/gyms/get";
 
   static Future<List<Gym>> getGyms() async {
-    final response = await http.get(Uri.parse("$baseUrl/get"));
+    final response = await http.get(Uri.parse(baseUrl)); // ✅ fixed (no /get again)
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
@@ -41,9 +41,6 @@ class GymService {
     }
   }
 }
-
-
-
 
 class gymmDetails extends StatefulWidget {
   const gymmDetails({super.key});

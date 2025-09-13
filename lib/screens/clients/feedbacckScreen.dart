@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class feedbackScreen extends StatefulWidget {
   const feedbackScreen({super.key});
@@ -12,16 +15,47 @@ class _feedbackScreenState extends State<feedbackScreen> {
   final TextEditingController _feedbackController = TextEditingController();
   int _rating = 0;
 
-  void _submitFeedback() {
-    if (_nameController.text.isNotEmpty && _feedbackController.text.isNotEmpty && _rating > 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("✅ Feedback Submitted Successfully")),
-      );
-      _nameController.clear();
-      _feedbackController.clear();
-      setState(() {
-        _rating = 0;
-      });
+  Future<void> _submitFeedback() async {
+    if (_nameController.text.isNotEmpty &&
+        _feedbackController.text.isNotEmpty &&
+        _rating > 0) {
+      try {
+        // ✅ get token from SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString("token"); // save token at login
+
+        final response = await http.post(
+          Uri.parse("http://10.0.2.2:3001/api/feedback/feedback"),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token", // required for authMiddleware
+          },
+          body: json.encode({
+            "message": _feedbackController.text, // backend requires message
+            "comments": _nameController.text,    // mapping name as comments
+            "rating": _rating,
+          }),
+        );
+
+        if (response.statusCode == 201) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("✅ Feedback Submitted Successfully")),
+          );
+          _nameController.clear();
+          _feedbackController.clear();
+          setState(() {
+            _rating = 0;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("⚠️ Failed: ${response.body}")),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("❌ Error: $e")),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("⚠️ Please fill all fields")),
@@ -34,7 +68,7 @@ class _feedbackScreenState extends State<feedbackScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text("Feedback", style: TextStyle(color: Colors.white),),
+        title: const Text("Feedback", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.black,
@@ -117,7 +151,10 @@ class _feedbackScreenState extends State<feedbackScreen> {
                 ),
                 child: const Text(
                   "Submit Feedback",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             )
