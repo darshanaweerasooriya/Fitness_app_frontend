@@ -18,24 +18,23 @@ class _addDetailsState extends State<addDetails> {
   final TextEditingController statusController = TextEditingController();
   final TextEditingController targetDateController = TextEditingController();
 
-
   String _gender = 'Male';
   String _target = 'Fat loss';
   String _fitnessLevel = 'Beginner';
   String _dietPlan = 'No';
 
   Future<void> submitData() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString('token');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
-    if (token == null) {
+    if (token == null || token.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Unauthorized: No token found")),
       );
       return;
     }
 
-    final uri = Uri.parse('http://localhost:3001/api/fitnessassess');
+    final uri = Uri.parse('http://10.0.2.2:3001/api/fitnessassess');
 
     try {
       final response = await http.post(
@@ -51,8 +50,8 @@ class _addDetailsState extends State<addDetails> {
           'gender': _gender,
           'target': _target,
           'fitnessLevel': _fitnessLevel,
-          'dietPlan': _dietPlan,
-          'medicalCondition': statusController.text.trim(),
+          'dietplan': _dietPlan, // ✅ backend key
+          'dailyStatus': statusController.text.trim(), // ✅ backend key
           'targetDate': targetDateController.text.trim(),
         }),
       );
@@ -60,7 +59,6 @@ class _addDetailsState extends State<addDetails> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
 
-        // if your backend returns calculated values
         if (responseData['result'] != null) {
           final result = responseData['result'];
           double dailyCalories = double.tryParse(result['dailyCalories'].toString()) ?? 0.0;
@@ -71,16 +69,10 @@ class _addDetailsState extends State<addDetails> {
             const SnackBar(content: Text("Details submitted successfully!")),
           );
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => result(
-                dailyCalories: dailyCalories,
-                protein: protein,
-                water: water,
-              ),
-            ),
-          );
+          // Navigate to result page if you have one
+          // Navigator.push(context, MaterialPageRoute(
+          //   builder: (_) => result(dailyCalories: dailyCalories, protein: protein, water: water)
+          // ));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Details submitted, but no results returned")),
@@ -102,11 +94,6 @@ class _addDetailsState extends State<addDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F6FC),
-      // appBar: AppBar(
-      //   title: const Text("Enter Your Details"),
-      //   backgroundColor: Colors.white,
-      //   elevation: 1,
-      // ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -223,8 +210,7 @@ class _addDetailsState extends State<addDetails> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style:
-              const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
           child,
         ],
