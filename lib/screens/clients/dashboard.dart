@@ -19,11 +19,21 @@ class _dashboardScreenState extends State<dashboardScreen> {
   double? height;
   double? weight;
   bool isLoading = true;
+  String? username; // ✅ username from token
 
   @override
   void initState() {
     super.initState();
     loadAssessment();
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final storedName = prefs.getString('username'); // ✅ saved during login
+    setState(() {
+      username = storedName ?? "User";
+    });
   }
 
   Future<void> loadAssessment() async {
@@ -76,6 +86,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
+    await prefs.remove('username');
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => logingScrenn()),
@@ -109,7 +120,6 @@ class _dashboardScreenState extends State<dashboardScreen> {
               const SizedBox(height: 20),
               _buildMealAndExerciseOptions(),
               const SizedBox(height: 20),
-
             ],
           ),
         ),
@@ -133,17 +143,18 @@ class _dashboardScreenState extends State<dashboardScreen> {
               const CircleAvatar(
                 radius: 30,
                 backgroundColor: Colors.blueAccent,
-                child: Text("A",
-                    style: TextStyle(color: Colors.white, fontSize: 24)),
+                child: Icon(Icons.person, color: Colors.white, size: 28),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Name",
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold)),
+                    Text(
+                      username ?? "Loading...", // ✅ Show username here
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 4),
                     Text("Age 23",
                         style:
@@ -192,10 +203,9 @@ class _dashboardScreenState extends State<dashboardScreen> {
           _statCard("Water", "2.5 L", Icons.water_drop, Colors.blue),
         ],
       ),
-
     );
-
   }
+
   Widget _buildScrollableStat() {
     return SizedBox(
       height: 140,
@@ -209,13 +219,10 @@ class _dashboardScreenState extends State<dashboardScreen> {
           _statCard("Water", "2.5 L", Icons.water_drop, Colors.blue),
         ],
       ),
-
     );
-
   }
 
-  Widget _statCard(
-      String title, String value, IconData icon, Color color) {
+  Widget _statCard(String title, String value, IconData icon, Color color) {
     return Container(
       width: 160,
       margin: const EdgeInsets.only(right: 16),
@@ -248,8 +255,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
           title: "Mental health",
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (_) => mentalhealth()),
+            MaterialPageRoute(builder: (_) => mentalhealth()),
           ),
         ),
         const SizedBox(height: 10),
@@ -258,8 +264,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
           title: "Exercise",
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (_) => exerciseSChedule()),
+            MaterialPageRoute(builder: (_) => exerciseSChedule()),
           ),
         ),
         const SizedBox(height: 10),
@@ -268,13 +273,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
           title: "Meal Plans",
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => logingScrenn()
-              //     GroceryListPage(
-              //   token: 'your_token_here',
-              //   selectedDate: '2025-05-19',
-              // ),
-            ),
+            MaterialPageRoute(builder: (_) => logingScrenn()),
           ),
         ),
         const SizedBox(height: 10),
@@ -316,36 +315,6 @@ class _dashboardScreenState extends State<dashboardScreen> {
             const Icon(Icons.arrow_forward_ios, color: Colors.grey),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class MealDetailPage extends StatelessWidget {
-  final String mealType;
-
-  const MealDetailPage({super.key, required this.mealType});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('$mealType Plan')),
-      body: Center(
-        child: Text('Detailed information about the $mealType meal plan.'),
-      ),
-    );
-  }
-}
-
-class ExerciseDetailPage extends StatelessWidget {
-  const ExerciseDetailPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Exercise Plan')),
-      body: const Center(
-        child: Text('Detailed information about your Exercise Plan.'),
       ),
     );
   }
