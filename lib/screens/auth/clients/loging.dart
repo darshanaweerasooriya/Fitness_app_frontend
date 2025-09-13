@@ -31,9 +31,56 @@ class _logingScrennState extends State<logingScrenn> {
   }
 
   void loginUser() async {
+    String username = usernameController.text.trim();
+    String password = passwordController.text.trim();
 
+    if (username.isEmpty || password.isEmpty) {
+      setState(() {
+        _isNotvalidate = true;
+      });
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse("http://10.0.2.2:3001/api/users/userLoging"),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "username": username,
+          "password": password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data["token"] != null) {
+          // Save token in SharedPreferences
+          await prefs.setString("token", data["token"]);
+
+          // Navigate to TabBar page
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => appbat()), // your tabbar page
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Login failed: token not found")),
+          );
+        }
+      } else {
+        final error = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: ${error["message"] ?? "Login failed"}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error connecting to server: $e")),
+      );
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,14 +89,8 @@ class _logingScrennState extends State<logingScrenn> {
         body: Stack(
           children: [
             Container(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
               child: Image.asset("images/authpageclients.jpg", fit: BoxFit.cover),
             ),
             Positioned(
@@ -124,10 +165,7 @@ class _logingScrennState extends State<logingScrenn> {
                           children: [
                             SizedBox(width: 20),
                             Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width - 50,
+                              width: MediaQuery.of(context).size.width - 50,
                               height: 50,
                               child: TextField(
                                 controller: usernameController,
@@ -143,8 +181,8 @@ class _logingScrennState extends State<logingScrenn> {
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide.none,
                                   ),
-                                  prefixIcon: Icon(
-                                      Icons.person, color: Colors.black),
+                                  prefixIcon: Icon(Icons.person,
+                                      color: Colors.black),
                                   hintText: 'Enter your username',
                                   contentPadding: EdgeInsets.symmetric(
                                       vertical: 15.0, horizontal: 10.0),
@@ -161,10 +199,7 @@ class _logingScrennState extends State<logingScrenn> {
                           children: [
                             SizedBox(width: 20),
                             Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width - 50,
+                              width: MediaQuery.of(context).size.width - 50,
                               height: 50,
                               child: TextField(
                                 controller: passwordController,
@@ -180,8 +215,8 @@ class _logingScrennState extends State<logingScrenn> {
                                     borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide.none,
                                   ),
-                                  prefixIcon: Icon(
-                                      Icons.lock, color: Colors.black),
+                                  prefixIcon:
+                                  Icon(Icons.lock, color: Colors.black),
                                   hintText: 'Enter your Password',
                                   contentPadding: EdgeInsets.symmetric(
                                       vertical: 15.0, horizontal: 10.0),
@@ -224,15 +259,15 @@ class _logingScrennState extends State<logingScrenn> {
                             Container(
                               width: 220,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => appbat()));
-                                },
+                                onPressed: loginUser, // ✅ API call
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all<
-                                      Color>(Colors.black),
+                                  backgroundColor:
+                                  MaterialStateProperty.all<Color>(
+                                      Colors.black),
                                 ),
-                                child: const Text("Sign in", style: TextStyle(
-                                    fontSize: 20, color: Colors.white)),
+                                child: const Text("Sign in",
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.white)),
                               ),
                             ),
                           ],
@@ -252,12 +287,14 @@ class _logingScrennState extends State<logingScrenn> {
                                     onTap: () {
                                       Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (context) =>
-                                           registerClients()),
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                registerClients()),
                                       );
                                     },
-                                    child: Text("Sign up", style: TextStyle(
-                                        color: Colors.blueAccent)),
+                                    child: Text("Sign up",
+                                        style: TextStyle(
+                                            color: Colors.blueAccent)),
                                   )
                                 ],
                               ),

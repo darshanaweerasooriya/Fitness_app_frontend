@@ -1,4 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+// Gym Model
+class Gym {
+  final String id;
+  final String name;
+  final double latitude;
+  final double longitude;
+
+  Gym({
+    required this.id,
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+  });
+
+  factory Gym.fromJson(Map<String, dynamic> json) {
+    return Gym(
+      id: json["_id"],
+      name: json["name"],
+      latitude: (json["latitude"] as num).toDouble(),
+      longitude: (json["longitude"] as num).toDouble(),
+    );
+  }
+}
+
+// Gym Service
+class GymService {
+  static const String baseUrl = "http://10.0.2.2:3001/api/gyms/get";
+
+  static Future<List<Gym>> getGyms() async {
+    final response = await http.get(Uri.parse("$baseUrl/get"));
+
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      return data.map((gym) => Gym.fromJson(gym)).toList();
+    } else {
+      throw Exception("Failed to load gyms");
+    }
+  }
+}
+
+
+
 
 class gymmDetails extends StatefulWidget {
   const gymmDetails({super.key});
@@ -8,85 +53,60 @@ class gymmDetails extends StatefulWidget {
 }
 
 class _gymmDetailsState extends State<gymmDetails> {
+  late Future<List<Gym>> _futureGyms;
   final TextEditingController searchController = TextEditingController();
-
-  // Dummy gym data with local images
-  final List<Map<String, String>> gyms = [
-    {
-      "name": "FitZone Gym",
-      "location": "4th Floor, New Market Building, Kurunegala",
-      "image": "images/gymex.jpg"
-    },
-    {
-      "name": "PowerHouse Fitness",
-      "location": "Colombo Road, Kurunegala",
-      "image": "images/gymex.jpg"
-    },
-    {
-      "name": "Muscle Factory",
-      "location": "Main Street, Kandy",
-      "image": "images/gymex.jpg"
-    },
-    {
-      "name": "Kurunegala Fitness Hub",
-      "location": "2nd Floor, Mall Complex, Kurunegala",
-      "image": "images/gymex.jpg"
-    },
-  ];
-
   String searchText = "";
 
   @override
-  Widget build(BuildContext context) {
-    // Filter gyms based on search text
-    List<Map<String, String>> filteredGyms = gyms.where((gym) {
-      return gym["location"]!
-          .toLowerCase()
-          .contains(searchText.toLowerCase());
-    }).toList();
+  void initState() {
+    super.initState();
+    _futureGyms = GymService.getGyms();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color(0xFFF2F6FC), // match dashboard background
-        // appBar: AppBar(
-        //   title: const Text("Find Gyms"),
-        //   backgroundColor: Colors.white,
-        //   elevation: 1,
-        //   titleTextStyle: const TextStyle(
-        //     fontSize: 22,
-        //     fontWeight: FontWeight.bold,
-        //     color: Colors.black,
-        //   ),
-        //   iconTheme: const IconThemeData(color: Colors.black),
-        // ),
+        backgroundColor: const Color(0xFFF2F6FC),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // Search bar styled like dashboard input
               _buildSearchField(
                 controller: searchController,
-                hint: "Search by location...",
+                hint: "Search by gym name...",
               ),
               const SizedBox(height: 16),
 
-              // List of gyms
               Expanded(
-                child: filteredGyms.isEmpty
-                    ? const Center(
-                  child: Text(
-                    "No gyms found for this location",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                )
-                    : ListView.builder(
-                  itemCount: filteredGyms.length,
-                  itemBuilder: (context, index) {
-                    final gym = filteredGyms[index];
-                    return _buildGymCard(
-                      gym["name"]!,
-                      gym["location"]!,
-                      gym["image"]!,
+                child: FutureBuilder<List<Gym>>(
+                  future: _futureGyms,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text("Error: ${snapshot.error}"));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text("No gyms found"));
+                    }
+
+                    // Filter gyms
+                    final gyms = snapshot.data!.where((gym) {
+                      return gym.name
+                          .toLowerCase()
+                          .contains(searchText.toLowerCase());
+                    }).toList();
+
+                    return ListView.builder(
+                      itemCount: gyms.length,
+                      itemBuilder: (context, index) {
+                        final gym = gyms[index];
+                        return _buildGymCard(
+                          gym.name,
+                          "Lat: ${gym.latitude}, Lng: ${gym.longitude}",
+                          "images/gymex.jpg", // Default image
+                        );
+                      },
                     );
                   },
                 ),
@@ -94,11 +114,22 @@ class _gymmDetailsState extends State<gymmDetails> {
             ],
           ),
         ),
+
+        // Refresh button
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.green,
+          onPressed: () {
+            setState(() {
+              _futureGyms = GymService.getGyms();
+            });
+          },
+          child: const Icon(Icons.refresh, color: Colors.white),
+        ),
       ),
     );
   }
 
-  // Search Field Widget (modern)
+  // Search Field
   Widget _buildSearchField({
     required TextEditingController controller,
     required String hint,
@@ -135,7 +166,7 @@ class _gymmDetailsState extends State<gymmDetails> {
     );
   }
 
-  // Gym Card Widget (match dashboard tile style)
+  // Gym Card
   Widget _buildGymCard(String name, String location, String imagePath) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -146,7 +177,6 @@ class _gymmDetailsState extends State<gymmDetails> {
       ),
       child: Row(
         children: [
-          // Gym Image
           ClipRRect(
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18), bottomLeft: Radius.circular(18)),
@@ -158,8 +188,6 @@ class _gymmDetailsState extends State<gymmDetails> {
             ),
           ),
           const SizedBox(width: 12),
-
-          // Gym Details
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
@@ -183,10 +211,10 @@ class _gymmDetailsState extends State<gymmDetails> {
               ),
             ),
           ),
-
           const Padding(
             padding: EdgeInsets.only(right: 12),
-            child: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            child: Icon(Icons.arrow_forward_ios,
+                size: 16, color: Colors.grey),
           )
         ],
       ),

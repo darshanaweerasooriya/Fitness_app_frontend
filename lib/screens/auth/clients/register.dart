@@ -18,6 +18,33 @@ class _registerClientsState extends State<registerClients> {
   bool _isNotvalidate = false;
 
   Future<void> signUp() async {
+    final Uri uri = Uri.parse('http://10.0.2.2:3001/api/users');
+
+    final Map<String, dynamic> userData = {
+      'username': usernameController.text,
+      'email': useremail.text,
+      'password': password.text,
+      'phonenumber': phnum.text,
+    };
+
+
+    try {
+      final http.Response response = await http.post(
+        uri,
+        body: jsonEncode(userData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _showDialog('Success', 'Registration successful!', true);
+      } else {
+        _showDialog('Failed', 'Registration failed: ${response.body}', false);
+      }
+    } catch (error) {
+      _showDialog('Error', 'An error occurred: $error', false);
+    }
 
   }
 

@@ -3,14 +3,15 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class addDetails extends StatefulWidget {
-  const addDetails({super.key});
+
+class coachDetail extends StatefulWidget {
+  const coachDetail({super.key});
 
   @override
-  State<addDetails> createState() => _addDetailsState();
+  State<coachDetail> createState() => _coachDetailState();
 }
 
-class _addDetailsState extends State<addDetails> {
+class _coachDetailState extends State<coachDetail> {
 
   final TextEditingController ageController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
@@ -97,7 +98,6 @@ class _addDetailsState extends State<addDetails> {
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
