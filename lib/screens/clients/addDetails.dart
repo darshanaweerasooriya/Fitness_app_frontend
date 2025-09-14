@@ -1,3 +1,4 @@
+import 'package:finessmobileapp/screens/clients/exerciseSchedule.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -11,17 +12,17 @@ class addDetails extends StatefulWidget {
 }
 
 class _addDetailsState extends State<addDetails> {
-
   final TextEditingController ageController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
   final TextEditingController statusController = TextEditingController();
   final TextEditingController targetDateController = TextEditingController();
 
-  String _gender = 'Male';
-  String _target = 'Fat loss';
-  String _fitnessLevel = 'Beginner';
-  String _dietPlan = 'No';
+  // ✅ Use the constants from your backend/frozen object
+  String _gender = 'Male'; // genderList.Male
+  String _target = 'Weight loss'; // targetList.WeightLoss
+  String _fitnessLevel = 'Beginner'; // fitnessLevel.Beginner
+  String _dietPlan = 'No'; // dietplanDetail.No
 
   Future<void> submitData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -50,29 +51,26 @@ class _addDetailsState extends State<addDetails> {
           'gender': _gender,
           'target': _target,
           'fitnessLevel': _fitnessLevel,
-          'dietplan': _dietPlan, // ✅ backend key
-          'dailyStatus': statusController.text.trim(), // ✅ backend key
+          'dietplan': _dietPlan,
+          'dailyStatus': statusController.text.trim(),
           'targetDate': targetDateController.text.trim(),
         }),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-
         if (responseData['result'] != null) {
-          final result = responseData['result'];
-          double dailyCalories = double.tryParse(result['dailyCalories'].toString()) ?? 0.0;
-          double protein = double.tryParse(result['protein'].toString()) ?? 0.0;
-          double water = double.tryParse(result['water'].toString()) ?? 0.0;
-
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Details submitted successfully!")),
           );
 
-          // Navigate to result page if you have one
-          // Navigator.push(context, MaterialPageRoute(
-          //   builder: (_) => result(dailyCalories: dailyCalories, protein: protein, water: water)
-          // ));
+          // ✅ Navigate to Exercise Schedule with the selected fitness level
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => exerciseSChedule(fitnessLevel: _fitnessLevel),
+            ),
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Details submitted, but no results returned")),
@@ -132,7 +130,7 @@ class _addDetailsState extends State<addDetails> {
               _inputCard(
                 title: "Gender",
                 child: _radioGroup(
-                  options: ['Male', 'Female'],
+                  options: ['Male', 'Female'], // match genderList
                   selectedValue: _gender,
                   onChanged: (val) => setState(() => _gender = val),
                 ),
@@ -140,7 +138,7 @@ class _addDetailsState extends State<addDetails> {
               _inputCard(
                 title: "Target",
                 child: _radioGroup(
-                  options: ['Fat loss', 'Body building', 'Flexibility'],
+                  options: ['Weight loss', 'Body building', 'Flexibility'], // match targetList
                   selectedValue: _target,
                   onChanged: (val) => setState(() => _target = val),
                 ),
@@ -148,7 +146,7 @@ class _addDetailsState extends State<addDetails> {
               _inputCard(
                 title: "Fitness Level",
                 child: _radioGroup(
-                  options: ['Beginner', 'Intermediate', 'Advanced'],
+                  options: ['Beginner', 'Intermediate', 'Advanced'], // match fitnessLevel
                   selectedValue: _fitnessLevel,
                   onChanged: (val) => setState(() => _fitnessLevel = val),
                 ),
@@ -156,7 +154,7 @@ class _addDetailsState extends State<addDetails> {
               _inputCard(
                 title: "Following a Diet Plan?",
                 child: _radioGroup(
-                  options: ['Yes', 'No'],
+                  options: ['Yes', 'No'], // match dietplanDetail
                   selectedValue: _dietPlan,
                   onChanged: (val) => setState(() => _dietPlan = val),
                 ),
@@ -187,8 +185,10 @@ class _addDetailsState extends State<addDetails> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text("Submit",
-                    style: TextStyle(fontSize: 18, color: Colors.white)),
+                child: const Text(
+                  "Submit",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -209,8 +209,7 @@ class _addDetailsState extends State<addDetails> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
           child,
         ],
@@ -218,10 +217,11 @@ class _addDetailsState extends State<addDetails> {
     );
   }
 
-  Widget _buildInputField(
-      {required TextEditingController controller,
-        required String hint,
-        required IconData icon}) {
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+  }) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
@@ -237,10 +237,11 @@ class _addDetailsState extends State<addDetails> {
     );
   }
 
-  Widget _radioGroup(
-      {required List<String> options,
-        required String selectedValue,
-        required Function(String) onChanged}) {
+  Widget _radioGroup({
+    required List<String> options,
+    required String selectedValue,
+    required Function(String) onChanged,
+  }) {
     return Wrap(
       spacing: 10,
       children: options.map((option) {
