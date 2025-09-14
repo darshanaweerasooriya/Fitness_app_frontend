@@ -116,7 +116,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
               const SizedBox(height: 20),
               _buildScrollableStats(),
               const SizedBox(height: 20),
-              _buildScrollableStat(),
+              _buildWaterIntakeCard(),
               const SizedBox(height: 20),
               _buildMealAndExerciseOptions(),
               const SizedBox(height: 20),
@@ -190,6 +190,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
     );
   }
 
+  /// 🔹 First row: Calories & Protein
   Widget _buildScrollableStats() {
     return SizedBox(
       height: 140,
@@ -198,25 +199,37 @@ class _dashboardScreenState extends State<dashboardScreen> {
         children: [
           _statCard("Calories", "2200 kcal", Icons.local_fire_department,
               Colors.redAccent),
-          _statCard(
-              "Protein", "120 g", Icons.fitness_center, Colors.deepPurple),
-          _statCard("Water", "2.5 L", Icons.water_drop, Colors.blue),
+          _statCard("Protein", "120 g", Icons.fitness_center, Colors.deepPurple),
         ],
       ),
     );
   }
 
-  Widget _buildScrollableStat() {
-    return SizedBox(
-      height: 140,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
+  /// 🔹 Separate Water Intake card
+  Widget _buildWaterIntakeCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+      ),
+      child: Row(
         children: [
-          _statCard("Calories", "2200 kcal", Icons.local_fire_department,
-              Colors.redAccent),
-          _statCard(
-              "Protein", "120 g", Icons.fitness_center, Colors.deepPurple),
-          _statCard("Water", "2.5 L", Icons.water_drop, Colors.blue),
+          Icon(Icons.water_drop, size: 32, color: Colors.blue),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text("Water Intake",
+                    style: TextStyle(fontSize: 16, color: Colors.black87)),
+                Text("2.5 L",
+                    style:
+                    TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
         ],
       ),
     );
