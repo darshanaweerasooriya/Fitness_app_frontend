@@ -277,7 +277,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
           title: "Exercise",
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => exerciseSChedule()),
+            MaterialPageRoute(builder: (_) => exerciseSChedule(fitnessLevel: "Beginner")),
           ),
         ),
         const SizedBox(height: 10),
