@@ -1,6 +1,7 @@
 import 'package:finessmobileapp/screens/auth/clients/loging.dart';
 import 'package:finessmobileapp/screens/clients/exerciseSchedule.dart';
 import 'package:finessmobileapp/screens/clients/feedbacckScreen.dart';
+import 'package:finessmobileapp/screens/clients/mealplannig.dart';
 import 'package:finessmobileapp/screens/clients/mentalhealthScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -97,16 +98,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F6FC),
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: logout,
-            tooltip: 'Logout',
-          )
-        ],
-      ),
+
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -286,7 +278,7 @@ class _dashboardScreenState extends State<dashboardScreen> {
           title: "Meal Plans",
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => logingScrenn()),
+            MaterialPageRoute(builder: (_) => MealPlanScreen()),
           ),
         ),
         const SizedBox(height: 10),
