@@ -5,6 +5,7 @@ import 'package:finessmobileapp/screens/clients/exerciseSchedule.dart';
 import 'package:finessmobileapp/screens/clients/feedbacckScreen.dart';
 import 'package:finessmobileapp/screens/clients/gymDetails.dart';
 import 'package:finessmobileapp/screens/clients/selectCoaches.dart';
+import 'package:finessmobileapp/screens/clients/userAccountScreen.dart';
 import 'package:flutter/material.dart';
 
 class appbat extends StatefulWidget {
@@ -21,7 +22,7 @@ class _appbatState extends State<appbat> {
     addDetails(),
     selectCoaches(),
     gymmDetails(),
-    exerciseSChedule()
+    UserAccountPage()
   ];
   @override
   Widget build(BuildContext context) {
